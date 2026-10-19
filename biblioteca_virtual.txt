@@ -1,0 +1,6 @@
+123,tudo é rio,carla madeira,adorei,6.0
+567,Amor,Estela,amei,4.0
+999,Oi,Gabriela,ameiiiii,10.0
+111,ABC,Diva,amei,0.0
+222,isso ai,gabi,odiei,1.0
+234,python,Edson,legal,8.0

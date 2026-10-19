@@ -89,20 +89,29 @@ while True:
                 except:
                     print("Ocorreu um erro!")
 
+            case 3:
+                while True:
+                    id = input("Informe o ID do livro (pressione ENTER vazio para voltar ao menu anterior): ")
+                    if id == "":
+                        print("Pesquisa encerrada.")
+                        break
+                    sub.pesquisar_id(id)
+                    sub.continuar()
+                    sub.limpar_tela()
+
             case _:
                 sub.limpar_tela()
                 print("Digite um valor válido!")
                 sub.continuar()
 
     except ValueError:
+        print(30 * "-")
         print("Digite um número!")
+        print(30 * "-")
         sub.continuar()
 
-    except KeyboardInterrupt:
-        print(30 * "-")
-        print("Interrompido pelo teclado")
-        break
-
     except:
+        print(30 * "-")
         print("Ocorreu um erro!")
+        print(30 * "-")
         sub.continuar()

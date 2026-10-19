@@ -2,6 +2,10 @@
 # Gabriela Labrada - RM569849
 import csv
 import json
+
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Font, Alignment
+
 import os
 
 # Funções básicas
@@ -21,6 +25,7 @@ MENU PRINCIPAL
 0 - SAIR
 1 - Gravar livros
 2 - Ler arquivo
+3 - Procurar livro por ID
           """)
     print("-" * 30)
 
@@ -57,7 +62,9 @@ def pedir_info() -> tuple[str, str, str, float]:
             break
 
         except ValueError:
+            print(30 * "-")
             print("Entrada inválida! Digite um número.")
+            print(30 * "-")
 
     return nome, nome_autor, obs, nota
 
@@ -67,6 +74,7 @@ def gravar_livros(livros: dict, id: str) -> None:
     gravar_txt(livros, id)
     gravar_csv(livros, id)
     gravar_json(livros, id)
+    gravar_excel(livros,id)
 
 
 # Gravar TXT
@@ -150,6 +158,62 @@ def gravar_json(livros: dict, id: str) -> None:
         json.dump(dados, arquivo, indent=4)
 
 
+# Iniciar Excel
+# def iniciar_excel() -> None:
+#     biblioteca_virtual = Workbook()
+#     aba = biblioteca_virtual.active
+#     aba.title = "Livros"
+
+#     # Cabeçalho
+#     aba['A1'] = "ID"
+#     aba['B1'] = "Título"
+#     aba['C1'] = "Autor(a)"
+#     aba['D1'] = "Observações"
+#     aba['E1'] = "Nota"
+
+#     biblioteca_virtual.save()
+    
+# Gravar Excel
+def gravar_excel(livros: dict, id: str) -> None:
+    # Gravando os dados
+    try:
+        biblioteca_virtual = load_workbook("biblioteca_virtual.xlsx")
+        aba = biblioteca_virtual["Livros"]
+
+        linha = aba.max_row + 1
+        aba[f"A{linha}"] = id
+        aba[f"B{linha}"] = livros[id]["nome"]
+        aba[f"C{linha}"] = livros[id]["nome_autor"]
+        aba[f"D{linha}"] = livros[id]["obs"]
+        aba[f"E{linha}"] = livros[id]["nota"]
+
+        biblioteca_virtual.save("biblioteca_virtual.xlsx")
+
+    except FileNotFoundError:
+        biblioteca_virtual = Workbook()
+        aba = biblioteca_virtual.active
+        aba.title = "Livros"
+    
+        # Cabeçalho
+        aba['A1'] = "ID"
+        aba['B1'] = "Título"
+        aba['C1'] = "Autor(a)"
+        aba['D1'] = "Observações"
+        aba['E1'] = "Nota"
+
+        linha = aba.max_row + 1
+        aba[f"A{linha}"] = id
+        aba[f"B{linha}"] = livros[id]["nome"]
+        aba[f"C{linha}"] = livros[id]["nome_autor"]
+        aba[f"D{linha}"] = livros[id]["obs"]
+        aba[f"E{linha}"] = livros[id]["nota"]
+    
+        biblioteca_virtual.save("biblioteca_virtual.xlsx")
+    except:
+        print(30 * "-")
+        print("Ocorreu um erro!")
+        print(30 * "-")
+
 # Exibir submenu
 def exibir_submenu() -> None:
     print("-" * 30)
@@ -218,5 +282,54 @@ ID: {id}
 \tNota: {dados["nota"]}
               """)
 
+
+# Ler Excel
 def ler_excel() -> None:
-    pass
+    try:
+        biblioteca_virtual = load_workbook("biblioteca_virtual.xlsx")
+        aba = biblioteca_virtual["Livros"]
+
+        print("BIBLIOTECA VIRTUAL - EXCEL")
+        for linha in aba.iter_rows(min_row=2, values_only=True):
+            print(f"""
+ID: {linha[0]}
+\tNome do livro: {linha[1]}
+\tNome do autor: {linha[2]}
+\tAnotações: {linha[3]}
+\tNota: {linha[4]}
+              """)
+
+    except FileNotFoundError:
+        print(30 * "-")
+        print("O arquivo Excel ainda não existe.")
+        print(30 * "-")
+
+# PESQUISAR ID
+def pesquisar_id(id_buscar: str) -> bool:
+    try:
+        with open("biblioteca_virtual.json", "r",encoding="utf-8") as arquivo:
+            livros = json.load(arquivo)
+            if id_buscar in livros:
+                dados = livros[id_buscar]
+                print(f"""
+ID: {id_buscar}
+\tNome do livro: {dados["nome"]}
+\tNome do autor: {dados["nome_autor"]}
+\tAnotações: {dados["obs"]}
+\tNota: {dados["nota"]}
+              """)
+                continuar
+            else:
+                print("ID não corresponde a nenhum livro!")
+            
+    except FileNotFoundError:
+        print(30 * "-")
+        print("O arquivo JSON ainda não existe.")
+        print(30 * "-")
+        continuar
+
+    except:
+        print(30 * "-")
+        print("Não foi possível procurar, tente novamente")
+        print(30 * "-")
+        continuar
